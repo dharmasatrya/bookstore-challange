@@ -2,10 +2,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 
-	"users/src/middleware"
+	"users/config"
+	"users/repository"
 	"users/src/service"
 
 	pb "github.com/dharmasatrya/proto-repo/user"
@@ -18,11 +20,20 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(middleware.UnaryAuthInterceptor),
-	)
+	// grpcServer := grpc.NewServer(
+	// 	grpc.UnaryInterceptor(middleware.UnaryAuthInterceptor),
+	// )
 
-	userService := service.NewUserService()
+	grpcServer := grpc.NewServer()
+
+	db, err := config.ConnectionDB(context.Background())
+	if err != nil {
+		log.Fatalf("Error connecting to db")
+	}
+
+	userRepository := repository.NewUserRepository(db)
+
+	userService := service.NewUserService(userRepository)
 	pb.RegisterUserServiceServer(grpcServer, userService)
 
 	log.Println("Server is running on port 50051...")

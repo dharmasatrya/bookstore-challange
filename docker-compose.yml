@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  shared-network:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb-bookstore
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=bookstore
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - shared-network
+
+  user-service:
+    build: 
+      context: .  # Now points to bookstore-challange directory
+      dockerfile: ./users/Dockerfile
+    container_name: user-service
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=bookstore
+      - MONGODB_COLLECTION=users
+    ports:
+      - "50051:50051"
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
+  gateway-service:
+    build: 
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway-service
+    restart: always
+    ports:
+      - "8080:8008"
+    networks:
+      - shared-network
+volumes:
+  mongodb_data:

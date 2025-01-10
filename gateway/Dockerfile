@@ -1,18 +1,24 @@
-FROM golang:1.23-alpine
-
-RUN apk update && apk add --no-cache git
+FROM golang:1.23.2
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+# Copy proto repo first
+COPY proto-repo /app/proto-repo
+
+# Copy users service files
+COPY gateway /app/gateway
+
+WORKDIR /app/gateway
+
+# Update go.mod to use local path
+RUN go mod edit -replace github.com/dharmasatrya/proto-repo=/app/proto-repo
+
+# Download dependencies
 RUN go mod download
 
-COPY . .
-
-RUN go mod tidy
-
+# Build
 RUN go build -o main .
 
 EXPOSE 8080
 
-CMD ["/app/main"]
+CMD ["./main"]

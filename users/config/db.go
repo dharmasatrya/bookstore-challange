@@ -11,9 +11,14 @@ import (
 )
 
 func ConnectionDB(ctx context.Context) (*mongo.Collection, error) {
+	// mongoURI := os.Getenv("MONGODB_URI")
+	// if mongoURI == "" {
+	// 	mongoURI = "mongodb://mongodb-bookstore:27017"
+	// }
+
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
-		mongoURI = "mongodb://mongodb-GC1:27017"
+		mongoURI = "mongodb://localhost:27017"
 	}
 
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -30,7 +35,7 @@ func ConnectionDB(ctx context.Context) (*mongo.Collection, error) {
 		return nil, fmt.Errorf("failed to ping MongoDB: %v", err)
 	}
 
-	collection := client.Database("GC1P3").Collection("users")
+	collection := client.Database("bookstore").Collection("users")
 	fmt.Println("Successfully connected to MongoDB")
 
 	return collection, nil
