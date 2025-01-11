@@ -6,8 +6,8 @@ import (
 
 type User struct {
 	ID       primitive.ObjectID `json:"_id" bson:"_id"`
-	Username string             `json:"name" bson:"name"`
-	Password string             `json:"email" bson:"email"`
+	Username string             `json:"username" bson:"username"`
+	Password string             `json:"password" bson:"password"`
 }
 
 type CreateUserInput struct {
@@ -17,4 +17,15 @@ type CreateUserInput struct {
 
 type CreateUserResponse struct {
 	Token string `json:"token"`
+}
+
+type LoginRequest struct {
+	Username string
+	Password string
+}
+
+type LoginResponse struct {
+	Token        string
+	Success      bool
+	ErrorMessage string
 }

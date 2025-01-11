@@ -17,5 +17,7 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token        string `json:"token"`
+	Success      bool
+	ErrorMessage string
 }

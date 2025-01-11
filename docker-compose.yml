@@ -42,7 +42,7 @@ services:
     container_name: gateway-service
     restart: always
     ports:
-      - "8080:8008"
+      - "8080:8080"
     networks:
       - shared-network
 volumes:

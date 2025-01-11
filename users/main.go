@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"users/config"
-	"users/repository"
+	"users/src/repository"
 	"users/src/service"
 
 	pb "github.com/dharmasatrya/proto-repo/user"
