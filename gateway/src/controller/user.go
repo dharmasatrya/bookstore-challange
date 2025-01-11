@@ -10,12 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type gatewayController struct {
-	gatewayService service.GatewayService
+type userController struct {
+	userService service.UserService
 }
 
-func NewGatewayController(gatewayService service.GatewayService) *gatewayController {
-	return &gatewayController{gatewayService}
+func NewUserController(userService service.UserService) *userController {
+	return &userController{userService}
 }
 
 // CreateUser godoc
@@ -28,7 +28,7 @@ func NewGatewayController(gatewayService service.GatewayService) *gatewayControl
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /users/register [post]
-func (h *gatewayController) RegisterUser(c echo.Context) error {
+func (h *userController) RegisterUser(c echo.Context) error {
 	var req entity.RegisterRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -44,7 +44,7 @@ func (h *gatewayController) RegisterUser(c echo.Context) error {
 
 	fmt.Println(req.Password)
 
-	status, response := h.gatewayService.RegisterUser(req)
+	status, response := h.userService.RegisterUser(req)
 
 	return c.JSON(status, response)
 }
@@ -59,14 +59,14 @@ func (h *gatewayController) RegisterUser(c echo.Context) error {
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /users/login [post]
-func (h *gatewayController) LoginUser(c echo.Context) error {
+func (h *userController) LoginUser(c echo.Context) error {
 	var req entity.LoginRequest
 
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
 	}
 
-	status, response := h.gatewayService.LoginUser(req)
+	status, response := h.userService.LoginUser(req)
 
 	return c.JSON(status, response)
 }

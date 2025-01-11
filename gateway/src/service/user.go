@@ -11,20 +11,20 @@ import (
 	"google.golang.org/grpc"
 )
 
-type GatewayService interface {
+type UserService interface {
 	RegisterUser(order entity.RegisterRequest) (int, *entity.User)
 	LoginUser(conn entity.LoginRequest) (int, *entity.LoginResponse)
 }
 
-type gatewayService struct {
+type userService struct {
 	conn *grpc.ClientConn
 }
 
-func NewGatewayService(conn *grpc.ClientConn) *gatewayService {
-	return &gatewayService{conn}
+func NewUserService(conn *grpc.ClientConn) *userService {
+	return &userService{conn}
 }
 
-func (u *gatewayService) RegisterUser(input entity.RegisterRequest) (int, *entity.User) {
+func (u *userService) RegisterUser(input entity.RegisterRequest) (int, *entity.User) {
 	client := userConn.NewUserServiceClient(u.conn)
 
 	// token := "Bearer valid-token"
@@ -45,7 +45,7 @@ func (u *gatewayService) RegisterUser(input entity.RegisterRequest) (int, *entit
 	return http.StatusOK, &response
 }
 
-func (u *gatewayService) LoginUser(input entity.LoginRequest) (int, *entity.LoginResponse) {
+func (u *userService) LoginUser(input entity.LoginRequest) (int, *entity.LoginResponse) {
 	client := userConn.NewUserServiceClient(u.conn)
 
 	res, err := client.LoginUser(context.Background(), &pb.LoginRequest{Username: input.Username, Password: input.Password})

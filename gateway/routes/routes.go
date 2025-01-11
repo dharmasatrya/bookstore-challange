@@ -20,9 +20,16 @@ func NewRouter() *echo.Echo {
 		log.Fatalf("Did'nt connect : %v", err)
 	}
 
-	gatewayService := service.NewGatewayService(userConnection)
+	bookConnection, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Did'nt connect : %v", err)
+	}
 
-	gatewayController := controller.NewGatewayController(gatewayService)
+	userService := service.NewUserService(userConnection)
+	userController := controller.NewUserController(userService)
+
+	bookService := service.NewBookService(bookConnection)
+	bookController := controller.NewBookController(bookService)
 
 	e := echo.New()
 
@@ -31,8 +38,11 @@ func NewRouter() *echo.Echo {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	u := e.Group("/users")
-	u.POST("/register", gatewayController.RegisterUser)
-	u.POST("/login", gatewayController.LoginUser)
+	u.POST("/register", userController.RegisterUser)
+	u.POST("/login", userController.LoginUser)
+
+	b := e.Group("/books")
+	b.POST("", bookController.CreateBook)
 
 	return e
 }

@@ -35,6 +35,23 @@ services:
     depends_on:
       - mongodb
 
+  book-service:
+    build: 
+      context: .
+      dockerfile: ./books/Dockerfile
+    container_name: book-service
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=bookstore
+      - MONGODB_COLLECTION=books
+    ports:
+      - "50052:50052"
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
   gateway-service:
     build: 
       context: .
