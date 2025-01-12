@@ -11,6 +11,7 @@ import (
 
 	pb "github.com/dharmasatrya/proto-repo/book"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type BookService struct {
@@ -127,5 +128,54 @@ func (s *BookService) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest)
 		PublishedDate: deletedBook.PublishedDate.Format("02-01-2006"),
 		Status:        deletedBook.Status,
 		UserId:        deletedBook.UserId,
+	}, nil
+}
+
+func (s *BookService) GetBookById(ctx context.Context, req *pb.GetBookByIdRequest) (*pb.GetBookResponse, error) {
+
+	// Convert string ID to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid book ID: %w", err)
+	}
+
+	deletedBook, err := s.bookRepo.GetBookById(ctx, objectID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete book: %w", err)
+	}
+
+	return &pb.GetBookResponse{
+		Id:            deletedBook.ID.Hex(),
+		Title:         deletedBook.Title,
+		Author:        deletedBook.Author,
+		PublishedDate: deletedBook.PublishedDate.Format("02-01-2006"),
+		Status:        deletedBook.Status,
+		UserId:        deletedBook.UserId,
+	}, nil
+}
+
+func (s *BookService) GetAllBook(ctx context.Context, req *emptypb.Empty) (*pb.GetAllBookResponse, error) {
+	log.Println("Getting all books")
+
+	books, err := s.bookRepo.GetAllBooks(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get books: %w", err)
+	}
+
+	// Transform to response
+	bookResponses := make([]*pb.GetBookResponse, len(books))
+	for i, book := range books {
+		bookResponses[i] = &pb.GetBookResponse{
+			Id:            book.ID.Hex(),
+			Title:         book.Title,
+			Author:        book.Author,
+			PublishedDate: book.PublishedDate.Format("02-01-2006"),
+			Status:        book.Status,
+			UserId:        book.UserId,
+		}
+	}
+
+	return &pb.GetAllBookResponse{
+		Books: bookResponses,
 	}, nil
 }

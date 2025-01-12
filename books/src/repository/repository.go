@@ -16,6 +16,8 @@ type BookRepository interface {
 	CreateBook(book entity.Book) (*entity.Book, error)
 	EditBook(ctx context.Context, input entity.EditBookRequest) (*entity.Book, error)
 	DeleteBook(ctx context.Context, id primitive.ObjectID) (*entity.Book, error)
+	GetBookById(ctx context.Context, id primitive.ObjectID) (*entity.Book, error)
+	GetAllBooks(ctx context.Context) ([]entity.Book, error)
 }
 
 type bookRepository struct {
@@ -118,4 +120,37 @@ func (r *bookRepository) DeleteBook(ctx context.Context, id primitive.ObjectID) 
 	}
 
 	return &deletedBook, nil
+}
+
+func (r *bookRepository) GetBookById(ctx context.Context, id primitive.ObjectID) (*entity.Book, error) {
+	// Find and delete the book, returning the deleted document
+	var book entity.Book
+	err := r.db.FindOne(
+		ctx,
+		bson.M{"id": id},
+	).Decode(&book)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("book not found")
+		}
+		return nil, fmt.Errorf("failed to fetch book: %w", err)
+	}
+
+	return &book, nil
+}
+
+func (r *bookRepository) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
+	cursor, err := r.db.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get books: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var books []entity.Book
+	if err := cursor.All(ctx, &books); err != nil {
+		return nil, fmt.Errorf("failed to decode books: %w", err)
+	}
+
+	return books, nil
 }

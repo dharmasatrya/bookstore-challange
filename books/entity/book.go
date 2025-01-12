@@ -56,3 +56,12 @@ type DeleteBookResponse struct {
 	Status        string             `json:"status" bson:"status"`
 	UserId        string             `json:"user_id" bson:"user_id"`
 }
+
+type GetBookByIdResponse struct {
+	ID            primitive.ObjectID `json:"id" bson:"id"`
+	Title         string             `json:"title" bson:"title"`
+	Author        string             `json:"author" bson:"author"`
+	PublishedDate time.Time          `json:"published_date" bson:"published_date"`
+	Status        string             `json:"status" bson:"status"`
+	UserId        string             `json:"user_id" bson:"user_id"`
+}
