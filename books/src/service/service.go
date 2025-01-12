@@ -103,3 +103,29 @@ func (s *BookService) EditBook(ctx context.Context, req *pb.EditBookRequest) (*p
 		UserId:        updatedBook.UserId,
 	}, nil
 }
+
+func (s *BookService) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*pb.DeleteBookResponse, error) {
+	log.Printf("Deleting book with ID: %s", req.Id)
+
+	// Convert string ID to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid book ID: %w", err)
+	}
+
+	// Call repository
+	deletedBook, err := s.bookRepo.DeleteBook(ctx, objectID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete book: %w", err)
+	}
+
+	// Transform to response
+	return &pb.DeleteBookResponse{
+		Id:            deletedBook.ID.Hex(),
+		Title:         deletedBook.Title,
+		Author:        deletedBook.Author,
+		PublishedDate: deletedBook.PublishedDate.Format("02-01-2006"),
+		Status:        deletedBook.Status,
+		UserId:        deletedBook.UserId,
+	}, nil
+}

@@ -15,6 +15,7 @@ import (
 type BookRepository interface {
 	CreateBook(book entity.Book) (*entity.Book, error)
 	EditBook(ctx context.Context, input entity.EditBookRequest) (*entity.Book, error)
+	DeleteBook(ctx context.Context, id primitive.ObjectID) (*entity.Book, error)
 }
 
 type bookRepository struct {
@@ -99,4 +100,22 @@ func (r *bookRepository) EditBook(ctx context.Context, input entity.EditBookRequ
 	}
 
 	return &updatedBook, nil
+}
+
+func (r *bookRepository) DeleteBook(ctx context.Context, id primitive.ObjectID) (*entity.Book, error) {
+	// Find and delete the book, returning the deleted document
+	var deletedBook entity.Book
+	err := r.db.FindOneAndDelete(
+		ctx,
+		bson.M{"id": id},
+	).Decode(&deletedBook)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("book not found")
+		}
+		return nil, fmt.Errorf("failed to delete book: %w", err)
+	}
+
+	return &deletedBook, nil
 }

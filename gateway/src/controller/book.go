@@ -75,3 +75,19 @@ func (h *bookController) EditBook(c echo.Context) error {
 
 	return c.JSON(status, response)
 }
+
+func (h *bookController) DeleteBook(c echo.Context) error {
+
+	token := c.Request().Header.Get("Authorization")
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{
+			"error": "No token provided",
+		})
+	}
+
+	bookId := c.Param("id")
+
+	status, response := h.bookService.DeleteBook(token, bookId)
+
+	return c.JSON(status, response)
+}
