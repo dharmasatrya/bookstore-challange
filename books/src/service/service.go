@@ -10,6 +10,7 @@ import (
 	"time"
 
 	pb "github.com/dharmasatrya/proto-repo/book"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BookService struct {
@@ -53,5 +54,52 @@ func (s *BookService) CreateBook(ctx context.Context, req *pb.CreateBookRequest)
 		PublishedDate: res.PublishedDate.Format("02-01-2006"),
 		Status:        res.Status,
 		UserId:        res.UserId,
+	}, nil
+}
+
+// service/book_service.go
+func (s *BookService) EditBook(ctx context.Context, req *pb.EditBookRequest) (*pb.EditBookResponse, error) {
+	log.Printf("Editing book with ID: %s", req.Id)
+
+	// Convert string ID to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid book ID: %w", err)
+	}
+
+	// Parse date if it's provided
+	var publishedDate *time.Time
+	if req.PublishedDate != nil {
+		parsed, err := time.Parse("02-01-2006", *req.PublishedDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid date format: %w", err)
+		}
+		publishedDate = &parsed
+	}
+
+	// Create update input
+	updateInput := entity.EditBookRequest{
+		ID:            objectID,
+		Title:         req.Title,
+		Author:        req.Author,
+		PublishedDate: publishedDate,
+		Status:        req.Status,
+		UserId:        req.UserId,
+	}
+
+	// Call repository
+	updatedBook, err := s.bookRepo.EditBook(ctx, updateInput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update book: %w", err)
+	}
+
+	// Transform to response
+	return &pb.EditBookResponse{
+		Id:            updatedBook.ID.Hex(),
+		Title:         updatedBook.Title,
+		Author:        updatedBook.Author,
+		PublishedDate: updatedBook.PublishedDate.Format("02-01-2006"),
+		Status:        updatedBook.Status,
+		UserId:        updatedBook.UserId,
 	}, nil
 }

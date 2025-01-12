@@ -44,3 +44,34 @@ func (h *bookController) CreateBook(c echo.Context) error {
 
 	return c.JSON(status, response)
 }
+
+// Edit book godoc
+// @Summary Edit a book
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param order body entity.EditBookInput true "book input"
+// @Success 201 {object} entity.Book
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /books/:id [put]
+func (h *bookController) EditBook(c echo.Context) error {
+	var req entity.EditBookRequest
+
+	token := c.Request().Header.Get("Authorization")
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{
+			"error": "No token provided",
+		})
+	}
+
+	bookId := c.Param("id")
+
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
+	}
+
+	status, response := h.bookService.EditBook(token, bookId, req)
+
+	return c.JSON(status, response)
+}
