@@ -13,21 +13,34 @@ import (
 )
 
 func NewRouter() *echo.Echo {
+	// userConnection, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// if err != nil {
+	// 	log.Fatalf("Did'nt connect : %v", err)
+	// }
 
-	// userConnection, err := grpc.Dial("user-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	userConnection, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// bookConnection, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// if err != nil {
+	// 	log.Fatalf("Did'nt connect : %v", err)
+	// }
+
+	// borrowConnection, err := grpc.Dial("localhost:50053", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// if err != nil {
+	// 	log.Fatalf("Did'nt connect : %v", err)
+	// }
+
+	userConnection, err := grpc.Dial("user-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Did'nt connect : %v", err)
+		log.Fatalf("Didn't connect to user service: %v", err)
 	}
 
-	bookConnection, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	bookConnection, err := grpc.Dial("book-service:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Did'nt connect : %v", err)
+		log.Fatalf("Didn't connect to book service: %v", err)
 	}
 
-	borrowConnection, err := grpc.Dial("localhost:50053", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	borrowConnection, err := grpc.Dial("borrow-service:50053", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Did'nt connect : %v", err)
+		log.Fatalf("Didn't connect to borrow service: %v", err)
 	}
 
 	userService := service.NewUserService(userConnection)

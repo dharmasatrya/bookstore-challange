@@ -6,7 +6,7 @@ WORKDIR /app
 COPY proto-repo /app/proto-repo
 
 # Copy users service files
-COPY users /app/books
+COPY books /app/books
 
 WORKDIR /app/books
 

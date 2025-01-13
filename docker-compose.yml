@@ -6,7 +6,7 @@ networks:
 
 services:
   mongodb:
-    image: mongo
+    image: mongo:latest
     container_name: mongodb-bookstore
     restart: always
     environment:
@@ -20,7 +20,7 @@ services:
 
   user-service:
     build: 
-      context: .  # Now points to bookstore-challange directory
+      context: .
       dockerfile: ./users/Dockerfile
     container_name: user-service
     restart: always
@@ -30,6 +30,8 @@ services:
       - MONGODB_COLLECTION=users
     ports:
       - "50051:50051"
+    volumes:
+      - ./proto-repo:/app/proto-repo
     networks:
       - shared-network
     depends_on:
@@ -47,6 +49,8 @@ services:
       - MONGODB_COLLECTION=books
     ports:
       - "50052:50052"
+    volumes:
+      - ./proto-repo:/app/proto-repo
     networks:
       - shared-network
     depends_on:
@@ -64,6 +68,8 @@ services:
       - MONGODB_COLLECTION=borrow
     ports:
       - "50053:50053"
+    volumes:
+      - ./proto-repo:/app/proto-repo
     networks:
       - shared-network
     depends_on:
@@ -75,9 +81,20 @@ services:
       dockerfile: ./gateway/Dockerfile
     container_name: gateway-service
     restart: always
+    environment:
+      - USER_SERVICE_URL=user-service:50051
+      - BOOK_SERVICE_URL=book-service:50052
+      - BORROW_SERVICE_URL=borrow-service:50053
     ports:
       - "8080:8080"
+    volumes:
+      - ./proto-repo:/app/proto-repo
     networks:
       - shared-network
+    depends_on:
+      - user-service
+      - book-service
+      - borrow-service
+
 volumes:
   mongodb_data:
