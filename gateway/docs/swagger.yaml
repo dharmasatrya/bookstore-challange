@@ -1,0 +1,406 @@
+definitions:
+  entity.Book:
+    properties:
+      author:
+        type: string
+      id:
+        type: string
+      published_date:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.BorrowBookInput:
+    properties:
+      book_id:
+        type: string
+      borrowed_date:
+        type: string
+    required:
+    - book_id
+    - borrowed_date
+    type: object
+  entity.BorrowedBook:
+    properties:
+      book_id:
+        type: string
+      borrowed_date:
+        type: string
+      id:
+        type: string
+      return_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.CreateBookInput:
+    properties:
+      author:
+        type: string
+      published_date:
+        type: string
+      title:
+        type: string
+    required:
+    - published_date
+    type: object
+  entity.EditBookRequest:
+    properties:
+      author:
+        type: string
+      published_date:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: string
+    required:
+    - published_date
+    type: object
+  entity.EditBorrowRequest:
+    properties:
+      book_id:
+        type: string
+      borrowed_date:
+        type: string
+      return_date:
+        type: string
+    type: object
+  entity.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.LoginResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  entity.RegisterRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.User:
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /books:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all available books
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Book'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get all books
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: book input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateBookInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Book'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new book
+      tags:
+      - books
+  /books/:id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: book input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EditBookRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Book'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: delete a book
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: book input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EditBookRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Book'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Edit a book
+      tags:
+      - books
+  /books/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Book'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a book by ID
+      tags:
+      - books
+  /borrows:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: borrow input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BorrowBookInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.BorrowedBook'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Borrow a book
+      tags:
+      - borrows
+  /borrows/:id:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: edit borrow input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EditBorrowRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.BorrowedBook'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Edit a borrowed book
+      tags:
+      - borrows
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login Information
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Register input
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - users
+swagger: "2.0"

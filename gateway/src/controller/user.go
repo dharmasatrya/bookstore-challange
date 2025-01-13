@@ -23,7 +23,7 @@ func NewUserController(userService service.UserService) *userController {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param order body entity.CreateUserInput true "Register input"
+// @Param order body entity.RegisterRequest true "Register input"
 // @Success 201 {object} entity.User
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string

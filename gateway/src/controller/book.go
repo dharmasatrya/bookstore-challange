@@ -45,12 +45,12 @@ func (h *bookController) CreateBook(c echo.Context) error {
 	return c.JSON(status, response)
 }
 
-// Delete book godoc
+// Edit book godoc
 // @Summary Edit a book
 // @Tags books
 // @Accept json
 // @Produce json
-// @Param order body entity.EditBookInput true "book input"
+// @Param order body entity.EditBookRequest true "book input"
 // @Success 201 {object} entity.Book
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -76,6 +76,16 @@ func (h *bookController) EditBook(c echo.Context) error {
 	return c.JSON(status, response)
 }
 
+// Delete book godoc
+// @Summary delete a book
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param order body entity.EditBookRequest true "book input"
+// @Success 201 {object} entity.Book
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /books/:id [delete]
 func (h *bookController) DeleteBook(c echo.Context) error {
 
 	token := c.Request().Header.Get("Authorization")
@@ -92,6 +102,17 @@ func (h *bookController) DeleteBook(c echo.Context) error {
 	return c.JSON(status, response)
 }
 
+// GetBookById godoc
+// @Summary Get a book by ID
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param id path string true "Book ID"
+// @Success 200 {object} entity.Book
+// @Failure 401 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /books/{id} [get]
 func (h *bookController) GetBookById(c echo.Context) error {
 
 	token := c.Request().Header.Get("Authorization")
@@ -108,6 +129,17 @@ func (h *bookController) GetBookById(c echo.Context) error {
 	return c.JSON(status, response)
 }
 
+// GetAllBook godoc
+// @Summary Get all books
+// @Description Retrieve a list of all available books
+// @Tags books
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {array} entity.Book
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /books [get]
 func (h *bookController) GetAllBook(c echo.Context) error {
 
 	token := c.Request().Header.Get("Authorization")
