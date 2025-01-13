@@ -2,12 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"gateway/entity"
 	"log"
 	"net/http"
 
-	bookConn "github.com/dharmasatrya/proto-repo/book"
 	pb "github.com/dharmasatrya/proto-repo/book"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -19,6 +17,7 @@ type BookService interface {
 	EditBook(token string, id string, input entity.EditBookRequest) (int, *entity.Book)
 	DeleteBook(token string, id string) (int, *entity.Book)
 	GetBookById(token string, id string) (int, *entity.Book)
+	GetAllBooks(token string) (int, []entity.Book)
 }
 
 type bookService struct {
@@ -30,7 +29,7 @@ func NewBookService(conn *grpc.ClientConn) *bookService {
 }
 
 func (u *bookService) CreateBook(token string, input entity.CreateBookInput) (int, *entity.Book) {
-	client := bookConn.NewBookServiceClient(u.conn)
+	client := pb.NewBookServiceClient(u.conn)
 
 	md := metadata.Pairs("authorization", token)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -60,7 +59,7 @@ func (u *bookService) CreateBook(token string, input entity.CreateBookInput) (in
 }
 
 func (u *bookService) EditBook(token string, id string, input entity.EditBookRequest) (int, *entity.Book) {
-	client := bookConn.NewBookServiceClient(u.conn)
+	client := pb.NewBookServiceClient(u.conn)
 
 	md := metadata.Pairs("authorization", token)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -103,7 +102,7 @@ func (u *bookService) EditBook(token string, id string, input entity.EditBookReq
 }
 
 func (u *bookService) DeleteBook(token string, id string) (int, *entity.Book) {
-	client := bookConn.NewBookServiceClient(u.conn)
+	client := pb.NewBookServiceClient(u.conn)
 
 	md := metadata.Pairs("authorization", token)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -130,7 +129,7 @@ func (u *bookService) DeleteBook(token string, id string) (int, *entity.Book) {
 }
 
 func (u *bookService) GetBookById(token string, id string) (int, *entity.Book) {
-	client := bookConn.NewBookServiceClient(u.conn)
+	client := pb.NewBookServiceClient(u.conn)
 
 	md := metadata.Pairs("authorization", token)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -156,15 +155,15 @@ func (u *bookService) GetBookById(token string, id string) (int, *entity.Book) {
 	return http.StatusOK, response
 }
 
-func (u *bookService) GetAllBooks(token string) ([]entity.Book, error) {
-	client := bookConn.NewBookServiceClient(u.conn)
+func (u *bookService) GetAllBooks(token string) (int, []entity.Book) {
+	client := pb.NewBookServiceClient(u.conn)
 
-	md := metadata.Pairs("authorization", "Bearer "+token)
+	md := metadata.Pairs("authorization", token)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	res, err := client.GetAllBook(ctx, &emptypb.Empty{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get books: %w", err)
+		return http.StatusInternalServerError, nil
 	}
 
 	books := make([]entity.Book, len(res.Books))
@@ -179,5 +178,5 @@ func (u *bookService) GetAllBooks(token string) ([]entity.Book, error) {
 		}
 	}
 
-	return books, nil
+	return http.StatusOK, books
 }

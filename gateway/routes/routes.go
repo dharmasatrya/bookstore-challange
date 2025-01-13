@@ -25,11 +25,19 @@ func NewRouter() *echo.Echo {
 		log.Fatalf("Did'nt connect : %v", err)
 	}
 
+	borrowConnection, err := grpc.Dial("localhost:50053", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Did'nt connect : %v", err)
+	}
+
 	userService := service.NewUserService(userConnection)
 	userController := controller.NewUserController(userService)
 
 	bookService := service.NewBookService(bookConnection)
 	bookController := controller.NewBookController(bookService)
+
+	borrowService := service.NewBorrowService(borrowConnection)
+	borrowController := controller.NewBorrowController(borrowService)
 
 	e := echo.New()
 
@@ -45,6 +53,12 @@ func NewRouter() *echo.Echo {
 	b.POST("", bookController.CreateBook)
 	b.PUT("/:id", bookController.EditBook)
 	b.DELETE("/:id", bookController.DeleteBook)
+	b.GET("", bookController.GetAllBook)
+	b.GET("/:id", bookController.GetBookById)
+
+	br := e.Group("/borrow")
+	br.POST("", borrowController.BorrowBook)
+	br.PUT("/:id", borrowController.EditBorrowedBook)
 
 	return e
 }

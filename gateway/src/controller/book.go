@@ -107,3 +107,17 @@ func (h *bookController) GetBookById(c echo.Context) error {
 
 	return c.JSON(status, response)
 }
+
+func (h *bookController) GetAllBook(c echo.Context) error {
+
+	token := c.Request().Header.Get("Authorization")
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{
+			"error": "No token provided",
+		})
+	}
+
+	status, response := h.bookService.GetAllBooks(token)
+
+	return c.JSON(status, response)
+}

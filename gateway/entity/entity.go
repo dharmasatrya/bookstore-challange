@@ -75,3 +75,22 @@ type DeleteBookResponse struct {
 	Status        string    `json:"status" bson:"status"`
 	UserId        string    `json:"user_id" bson:"user_id"`
 }
+
+type BorrowedBook struct {
+	ID           string `json:"id"`
+	BookID       string `json:"book_id"`
+	UserID       string `json:"user_id"`
+	BorrowedDate string `json:"borrowed_date"`
+	ReturnDate   string `json:"return_date,omitempty"`
+}
+
+type BorrowBookInput struct {
+	BookID       string `json:"book_id" validate:"required"`
+	BorrowedDate string `json:"borrowed_date" validate:"required,datetime=2006-01-02"`
+}
+
+type EditBorrowRequest struct {
+	BookID       *string `json:"book_id,omitempty"`
+	BorrowedDate *string `json:"borrowed_date,omitempty" validate:"datetime=2006-01-02"`
+	ReturnDate   *string `json:"return_date,omitempty" validate:"datetime=2006-01-02"`
+}

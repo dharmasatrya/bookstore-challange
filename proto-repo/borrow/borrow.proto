@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package borrow;
+option go_package = "/pb";
+
+service BorrowService {
+    rpc BorrowBook (BorrowBookRequest) returns (BorrowBookResponse);
+    rpc EditBorrowedBook (EditBorrowedBookRequest) returns (EditBorrowedBookResponse);
+}
+
+message BorrowBookRequest {
+    string book_id = 1;
+    string borrowed_date = 3;
+    string return_date = 4;
+}
+
+message BorrowBookResponse {
+    string id = 1;
+    string book_id = 2;
+    string user_id = 3;
+    string borrowed_date = 4;
+    string return_date = 5;
+}
+
+message EditBorrowedBookRequest {
+    string id = 1;
+    string book_id = 2;
+    string user_id = 3;
+    string borrowed_date = 4;
+    string return_date = 5;
+}
+
+message EditBorrowedBookResponse {
+    string id = 1;
+    string book_id = 2;
+    string user_id = 3;
+    string borrowed_date = 4;
+    string return_date = 5;
+}
