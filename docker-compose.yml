@@ -52,6 +52,23 @@ services:
     depends_on:
       - mongodb
 
+  borrow-service:
+    build: 
+      context: .
+      dockerfile: ./borrow/Dockerfile
+    container_name: borrow-service
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=bookstore
+      - MONGODB_COLLECTION=borrow
+    ports:
+      - "50053:50053"
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
   gateway-service:
     build: 
       context: .

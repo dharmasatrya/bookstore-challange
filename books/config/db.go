@@ -11,15 +11,15 @@ import (
 )
 
 func ConnectionDB(ctx context.Context) (*mongo.Collection, error) {
-	// mongoURI := os.Getenv("MONGODB_URI")
-	// if mongoURI == "" {
-	// 	mongoURI = "mongodb://mongodb-bookstore:27017"
-	// }
-
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
-		mongoURI = "mongodb://localhost:27017"
+		mongoURI = "mongodb://mongodb-bookstore:27017"
 	}
+
+	// mongoURI := os.Getenv("MONGODB_URI")
+	// if mongoURI == "" {
+	// 	mongoURI = "mongodb://localhost:27017"
+	// }
 
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
